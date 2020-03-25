@@ -74,21 +74,21 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
     # optimizer = torch.optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=0.0005)
     for epoch_count in range(epoch):
-        # net.train()
-        # loss_val, process = 0, 0
-        # for x, gts, cls in dataloader:
-        #     torch.cuda.empty_cache()
-        #     x, gts, cls = x.cuda(), gts.cuda(), cls.cuda()
-        #     box_pred, confidence_pred, class_pred = net(x)
-        #     loss, pos_box, cls_p, conf = yolo.loss(box_pred, confidence_pred, class_pred, gts, cls)
-        #     torch.cuda.empty_cache()
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
-        #     loss_val += loss.item()
-        #
-        #     process += x.shape[0]
-        #     print("\r进度：%s  本批loss:%.5f" % (processbar(process, len(dataset)), loss.item()), end="")
+        net.train()
+        loss_val, process = 0, 0
+        for x, gts, cls in dataloader:
+            torch.cuda.empty_cache()
+            x, gts, cls = x.cuda(), gts.cuda(), cls.cuda()
+            box_pred, confidence_pred, class_pred = net(x)
+            loss, pos_box, cls_p, conf = yolo.loss(box_pred, confidence_pred, class_pred, gts, cls)
+            torch.cuda.empty_cache()
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            loss_val += loss.item()
+
+            process += x.shape[0]
+            print("\r进度：%s  本批loss:%.5f" % (processbar(process, len(dataset)), loss.item()), end="")
 
             # 看下框画对了不
             # test_img_num = 0
@@ -113,9 +113,9 @@ if __name__ == '__main__':
             # cv2.imshow("pos", img)
             # cv2.waitKey(0)
 
-        # print("\nepoch:%d  loss:%.3f" % (epoch_count+1, loss_val))
+        print("\nepoch:%d  loss:%.3f" % (epoch_count+1, loss_val))
         if (epoch_count+1) % 1 == 0:
             test_path = random.choice(dataset.img_list).path
             print(test_path)
-            # torch.save(net.state_dict(), param_path)
+            torch.save(net.state_dict(), param_path)
             single_test(test_path, thresh=0.3)
