@@ -9,3 +9,4 @@
 
 ## 复现思路
 直接用3个loss相加，不求均值，confidence loss和offset loss用总方，classify loss用BCELoss，模型是yolov2的darknet19，损失函数是yolov3的损失函数，相当于在yolov2的基础上改了一些。
+![6](https://github.com/PofaixinBirusu/yolov2/blob/master/show-images/algorithm.jpg)
